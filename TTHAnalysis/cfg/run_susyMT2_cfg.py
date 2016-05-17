@@ -215,13 +215,13 @@ hbheFilterAna = cfg.Analyzer(
 ##------------------------------------------
 
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HT350_MET100, triggers_HT350_MET120
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_HT350, triggers_HT475,  triggers_HT600
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_met90_mht90, triggers_metNoMu90_mhtNoMu90, triggers_metNoMu120_mhtNoMu120, triggers_Jet80MET90
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_doubleele33, triggers_mumu_noniso
+from CMGTools.RootTools.samples.triggers_13TeV_Spring16 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HT350_MET100, triggers_HT350_MET120
+from CMGTools.RootTools.samples.triggers_13TeV_Spring16 import triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring16 import triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_HT350, triggers_HT475,  triggers_HT600, triggers_HT125
+from CMGTools.RootTools.samples.triggers_13TeV_Spring16 import triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring16 import triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+from CMGTools.RootTools.samples.triggers_13TeV_Spring16 import triggers_met90_mht90, triggers_metNoMu90_mhtNoMu90, triggers_metNoMu120_mhtNoMu120, triggers_Jet80MET90, triggers_met100_mht100, triggers_met110_mht110, triggers_met120_mht120
+from CMGTools.RootTools.samples.triggers_13TeV_Spring16 import triggers_doubleele33, triggers_mumu_noniso
 
 triggerFlagsAna.triggerBits = {
 'PFHT900' : triggers_HT900,
@@ -239,6 +239,7 @@ triggerFlagsAna.triggerBits = {
 'DiCentralPFJet70_PFMET120' : triggers_dijet70met120,
 'DiCentralPFJet55_PFMET110' : triggers_dijet55met110,
 ##
+'PFHT125_Prescale' : triggers_HT125,
 'PFHT350_Prescale' : triggers_HT350,
 'PFHT475_Prescale' : triggers_HT475,
 'PFHT600_Prescale'  : triggers_HT600,
@@ -254,6 +255,9 @@ triggerFlagsAna.triggerBits = {
 'Photon175' : triggers_photon175,
 ## monojet triggers
 'PFMET90_PFMHT90' : triggers_met90_mht90,
+'PFMET100_PFMHT100' : triggers_met100_mht100,
+'PFMET110_PFMHT110' : triggers_met110_mht110,
+'PFMET120_PFMHT120' : triggers_met120_mht120,
 'PFMETNoMu90_PFMHTNoMu90' : triggers_metNoMu90_mhtNoMu90,
 'PFMETNoMu120_PFMHTNoMu120' : triggers_metNoMu120_mhtNoMu120,
 'MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90' : triggers_Jet80MET90,
