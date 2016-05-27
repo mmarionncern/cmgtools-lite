@@ -348,7 +348,11 @@ _VV=[WWTo2L2Nu, ZZTo4L, WZTo1L3Nu, WZTo3LNu, WW, WZ, ZZ ]
 _VVV=[WWZ, WZZ, ZZZ]
 _ttV=[TTWToLNu, TTZToLLNuNu, ]
 
-selectedComponents = _sm+_ttbar+_gamX+_others+_VV+_VVV+_ttV
+selectedComponents = _ttV# _sm+_ttbar+_gamX+_others+_VV+_VVV+_ttV
+
+for c in selectedComponents:
+    c.splitFactor=250
+    c.fineSplitFactor=1
 
 if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
     target_lumi = scaleProdToLumi # in inverse picobarns
