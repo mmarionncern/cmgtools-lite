@@ -348,11 +348,21 @@ _VV=[WWTo2L2Nu, ZZTo4L, WZTo1L3Nu, WZTo3LNu, WW, WZ, ZZ ]
 _VVV=[WWZ, WZZ, ZZZ]
 _ttV=[TTWToLNu, TTZToLLNuNu, ]
 
-selectedComponents = _ttV# _sm+_ttbar+_gamX+_others+_VV+_VVV+_ttV
+selectedComponents = _ttV#+ _sm+_ttbar+_gamX+_others+_VV+_VVV
 
 for c in selectedComponents:
     c.splitFactor=250
     c.fineSplitFactor=1
+
+if analysis=='susy':
+    samples_2l = [DYJetsToLL_M10to50,DYJetsToLL_M50,WWTo2L2Nu,ZZTo2L2Q,WZTo3LNu,TTWToLNu,TTZToLLNuNu,TTJets_DiLepton,TTHnobb_mWCutfix_ext1]
+    samples_1l = [WJetsToLNu,TTJets_SingleLeptonFromT,TTJets_SingleLeptonFromTbar,TBarToLeptons_tch_powheg,TToLeptons_sch_amcatnlo,TBar_tWch,T_tWch]
+    selectedComponents = samples_1l+samples_2l
+    cropToLumi(selectedComponents,2)
+    configureSplittingFromTime(samples_1l,50,3)
+    configureSplittingFromTime(samples_2l,100,3)
+    printSummary(selectedComponents)
+
 
 if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
     target_lumi = scaleProdToLumi # in inverse picobarns
@@ -371,6 +381,7 @@ if runData and not isTest: # For running on data
     is50ns = False
     dataChunks = []
 
+<<<<<<< HEAD
     # Run2015C_25ns + Run2015D, 16Dec2015 rereco (76X)
     #json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON.txt'
     #processing = "Run2015C_25ns-16Dec2015-v1"; short = "Run2015C_25ns_16Dec2015"; run_ranges = []; useAAA=False;
@@ -384,6 +395,16 @@ if runData and not isTest: # For running on data
     dataChunks.append((json,processing,short,run_ranges,useAAA))
 
     processing = "Run2016B-PromptReco-v2"; short = "Run2016B_PromptReco_v2"; run_ranges = []; useAAA=False;
+=======
+    json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_271036-273450_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
+    processing = "Run2016B-PromptReco-v1"; short = "Run2016B_PromptReco_v1"; run_ranges = [(273013,273149)]; useAAA=False;
+    dataChunks.append((json,processing,short,run_ranges,useAAA))
+    processing = "Run2016B-PromptReco-v2"; short = "Run2016B_PromptReco_v2"; run_ranges = [(273150,273450)]; useAAA=False;
+    dataChunks.append((json,processing,short,run_ranges,useAAA))
+
+    json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/json_DCSONLY.txt'
+    processing = "Run2016B-PromptReco-v2"; short = "Run2016B_PromptReco_v2"; run_ranges = [(273492,273504),(273554,273555),(273725,273730)]; useAAA=False;
+>>>>>>> e12db3e7fcb6e7121c8268a3bd66bc9714448330
     dataChunks.append((json,processing,short,run_ranges,useAAA))
 
     compSelection = ""; compVeto = ""
@@ -433,8 +454,11 @@ if runData and not isTest: # For running on data
                         print "Will skip %s" % (compname)
                         continue
                 myprocessing = processing
+<<<<<<< HEAD
                 #if pd=="MuonEG" and ("Run2015D-05Oct2015" in processing): myprocessing = myprocessing.replace("05Oct2015-v1","05Oct2015-v2")
                 #if pd=="DoubleEG" and ("Run2015D-16Dec2015" in processing): myprocessing = myprocessing.replace("16Dec2015-v1","16Dec2015-v2")
+=======
+>>>>>>> e12db3e7fcb6e7121c8268a3bd66bc9714448330
                 comp = kreator.makeDataComponent(compname, 
                                                  "/"+pd+"/"+myprocessing+"/MINIAOD", 
                                                  "CMS", ".*root", 
@@ -647,7 +671,7 @@ if getHeppyOption("fast"):
         sequence.insert(sequence.index(jsonAna)+1, fastSkim)
     else:
         sequence.insert(sequence.index(skimAnalyzer)+1, fastSkim)
-if getHeppyOption("dropLHEweights",False):
+if getHeppyOption("dropLHEweights",True):
     treeProducer.collections.pop("LHE_weights")
     if lheWeightAna in sequence: sequence.remove(lheWeightAna)
     susyCounter.doLHE = False
