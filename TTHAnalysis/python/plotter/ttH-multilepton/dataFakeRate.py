@@ -160,6 +160,10 @@ if __name__ == "__main__":
             fzexpr  = yspec.expr + ":" + fspec.expr
             fzreport  = dict( [ (p,makeHistFromBinsAndSpec("%s_vs_%s_%s_2d"        % (yspec.name,fspec.name,p), fzexpr, fzbins, fspec)) for p in report.iterkeys() ] )
             xereport  = dict( [ (p,ROOT.TGraphAsymmErrors(projection.GetNbinsX()))   for p in report.iterkeys() ] )
+            if option.algo == "ucsxFit":
+                for (p,h) in report.iteritems():
+                    print p, h
+
             if options.algo == "globalFit":
                 # make plot above xcut
                 (bzname,iz) = ("_pass",2)

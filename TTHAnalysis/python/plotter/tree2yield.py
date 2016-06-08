@@ -193,6 +193,7 @@ class TreeToYield:
             self._scaleFactor = self.adaptExpr(scaleFactor, cut=True)
         else:
             self._scaleFactor = scaleFactor
+        print scaleFactor
     def getScaleFactor(self):
         return self._scaleFactor
     def setFullYield(self,fullYield):
@@ -336,7 +337,7 @@ class TreeToYield:
             else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
             if self._options.doS2V:
                 cut  = scalarToVector(cut)
-#            print cut
+            #print cut
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1D("dummy","dummy",1,0.0,1.0); histo.Sumw2()
@@ -354,6 +355,7 @@ class TreeToYield:
     def _stylePlot(self,plot,spec):
         return stylePlot(plot,spec,self.getOption)
     def getPlot(self,plotspec,cut,fsplit=None):
+        #print cut
         ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut, plotspec, fsplit=fsplit)
         # fold overflow
         if ret.ClassName() in [ "TH1F", "TH1D" ] :
@@ -399,8 +401,6 @@ class TreeToYield:
         if self._options.doS2V:
             cut  = scalarToVector(cut)
             expr = scalarToVector(expr)
-#        print cut
-#        print expr
         (firstEntry, maxEntries) = self._rangeToProcess(fsplit)
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = makeHistFromBinsAndSpec("dummy",expr,bins,plotspec)
@@ -413,6 +413,8 @@ class TreeToYield:
             return graph
         drawOpt = "goff"
         if "TProfile" in histo.ClassName(): drawOpt += " PROF";
+        print cut,"\n",
+        print "====> ",self._tree.GetEntries(cut), "\n"
         self._tree.Draw("%s>>%s" % (expr,"dummy"), cut, drawOpt, maxEntries, firstEntry)
         if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < self.getOption('KeysPdfMinN',2000) and not self._isdata and self.getOption("KeysPdf",False):
             #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())

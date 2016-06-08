@@ -619,6 +619,7 @@ class PlotMaker:
                 pspecs = matchspec + [ p for p in pspecs if p.name != options.preFitData ]
             for pspec in pspecs:
                 print "    plot: ",pspec.name
+                print "      --> cut: ",cut
                 pmap = mca.getPlots(pspec,cut,makeSummary=True)
                 #
                 # blinding policy

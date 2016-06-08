@@ -1,5 +1,10 @@
-weight: appWeight_Flips*hasTF_Flips*(LepGood_charge[i1_Flips[]]*LepGood_charge[i2_Flips[]]<0)
+weight: 1.0*hasTF_Flips*(LepGood_charge[i1_Flips[]]*LepGood_charge[i2_Flips[]]<0)*flip2016(LepGood_pdgId[i1_Flips[]], LepGood_pdgId[i2_Flips[]],LepGood_pt[i1_Flips[]], LepGood_pt[i2_Flips[]],LepGood_eta[i1_Flips[]], LepGood_eta[i2_Flips[]] )
+#*(LepGood_charge[i1_Flips[]]*LepGood_charge[i2_Flips[]]<0)*Triggers_ee
 
+#flip2016(LepGood_pdgId[i1_Flips[]], LepGood_pdgId[i2_Flips[]],LepGood_pt[i1_Flips[]], LepGood_pt[i2_Flips[]],LepGood_eta[i1_Flips[]], LepGood_eta[i2_Flips[]] )
+
+#/puw2016_vtx(nVert)/0.976
+ 
 change: LepGood1_(\w+) : LepGood_\1[i1_Flips[]]
 change: LepGood2_(\w+) : LepGood_\1[i2_Flips[]]
 change: nJet40\b: nJet40_Mini
@@ -11,4 +16,5 @@ change: hasTT\b: hasTT_Flips
 change: hasTF\b: hasTF_Flips
 change: hasFF\b: hasFF_Flips
 change: appWeight\b: appWeight_Flips
+
 

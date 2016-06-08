@@ -562,5 +562,37 @@ float mass_3_cheap(float pt1, float eta1, float pt2, float eta2, float phi2, flo
     return (p41+p42+p43).M();
 }
 
+TFile* _flipFile=NULL;
+TH2F* _elChMId=NULL;
+TH2F* _muChMId=NULL;
+
+float getBinValue(const TH2F* h, float x, float y) {
+  
+  int xbin  = std::max(1, std::min(h->GetNbinsX(), h->GetXaxis()->FindBin(x)));
+  int ybin = std::max(1, std::min(h->GetNbinsY(), h->GetYaxis()->FindBin(y)));
+  //std::cout<<x<<"  "<<xbin<<" ; "<<y<<"  "<<ybin<<" ; "<<h->GetBinContent(xbin,ybin)<<std::endl;
+  return h->GetBinContent(xbin,ybin)*1.191648;
+}
+
+float flip2016(int pdgId1, int pdgId2, float pt1, float pt2, float eta1, float eta2) {
+
+  if(!_elChMId || !_muChMId) {
+    _flipFile=new TFile("/afs/cern.ch/work/m/mmarionn/private/MPAF/workdir/database/chargeMId_80X_2016.root","read");
+    _elChMId = (TH2F*)_flipFile->Get("elChMId");
+    _muChMId = (TH2F*)_flipFile->Get("muChMId");
+  }
+
+  float p1=(std::abs(pdgId1)==11)?getBinValue(_elChMId, pt1, std::abs(eta1)):getBinValue(_muChMId, pt1, std::abs(eta1));
+  float p2=(std::abs(pdgId2)==11)?getBinValue(_elChMId, pt2, std::abs(eta2)):getBinValue(_muChMId, pt2, std::abs(eta2));
+
+  //std::cout<<" probs : "<<p1<<" / "<<p2<<std::endl;
+
+  if(p1>0.01) p1=0.0001;
+  if(p2>0.01) p2=0.0001;
+
+  return (1-p1)*p2 + (1-p2)*p1;
+}
+
+
 
 void functions() {}

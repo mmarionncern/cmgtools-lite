@@ -78,6 +78,10 @@ class LeptonJetReCleaner:
                     biglist.append( ("JetSel"+label+self.systsJEC[key]+"_"+jfloat,"F",20,"nJetSel"+label) )
                     biglist.append( ("DiscJetSel"+label+self.systsJEC[key]+"_"+jfloat,"F",20,"nDiscJetSel"+label) )
 
+        biglist.append( ("LepGood_awayJet_pt","F",20,"nLepGood") )
+        biglist.append( ("LepGood_awayJet_eta","F",20,"nLepGood") )
+        biglist.append( ("LepGood_awayJet_phi","F",20,"nLepGood") )
+
         return biglist
 
     def fillCollWithVeto(self,ret,refcollection,leps,lab,labext,selection,lepsforveto,doVetoZ,doVetoLM,sortby,ht=-1,pad_zeros_up_to=20):
@@ -179,6 +183,28 @@ class LeptonJetReCleaner:
         ret["mhtJet"+self.strJetPt+"j"+postfix] = mhtJetPtvec.Pt()
         return cleanjets
 
+    def getAwayJets(self,jets,leps):
+        ret = {}
+        ret["LepGood_awayJet_pt"] = []
+        ret["LepGood_awayJet_eta"] = []
+        ret["LepGood_awayJet_phi"] = []
+        #ret["LepGood_awayJet_btagCSV"] = []
+        #print "======================= ",len(leps), len(jets)
+        for lep in leps:
+            ret["LepGood_awayJet_pt"].append(-1)
+            ret["LepGood_awayJet_eta"].append(-1)
+            ret["LepGood_awayJet_phi"].append(-1)
+            for jet in jets:
+                if jet!=None and deltaR(lep,jet) > 1.0:
+                    ret["LepGood_awayJet_pt"][-1] = jet.pt
+                    ret["LepGood_awayJet_eta"][-1] = jet.eta
+                    ret["LepGood_awayJet_phi"][-1] = jet.phi
+                    #ret["LepGood_awayJet_btagCSV"]
+                    #print "youpiyou",jet.pt
+                    break
+        #print ret["LepGood_awayJet_pt"]
+        return ret
+
     def __call__(self,event):
         self.ev = event
         fullret = {}
@@ -222,6 +248,12 @@ class LeptonJetReCleaner:
         lepst = []; lepstv = [];
         ret, lepst, lepstv = self.fillCollWithVeto(ret,leps,lepsl,'T','Tight',self.tightLeptonSel,lepsforveto=lepsl,ht=retwlabel["htJet"+self.strJetPt+"j"+self.label],sortby = lambda x: x.conept, doVetoZ=self.doVetoZ, doVetoLM=self.doVetoLMt)
 
+        #get the jet away from leptons if needed
+        awayJetret = self.getAwayJets(cleanjets[0], leps)
+        for k,v in awayJetret.iteritems():
+            #print k,v
+            fullret[k]=v
+
         ### attach labels and return
         fullret["nLepGood"]=len(leps)
         fullret["LepGood_conePt"] = [lep.conept for lep in leps]
@@ -233,7 +265,6 @@ class LeptonJetReCleaner:
         for k,v in discjetret.iteritems(): 
             fullret["DiscJetSel%s_%s" % (self.label,k)] = v
         return fullret
-
 
 def bestZ1TL(lepsl,lepst,cut=lambda lep:True):
       pairs = []
