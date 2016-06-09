@@ -3,12 +3,12 @@
 ################################
 
 BCORE=" --s2v --tree treeProducerSusyMultilepton ttH-multilepton/lepton-mca-frstudies.txt object-studies/lepton-perlep.txt  "
-T="/afs/cern.ch/user/g/gpetrucc/w/TREES_TTH_260116_76X_1L/"
+T="/afs/cern.ch/user/m/mmarionn/workspace/public/SUSYSamples/80X_May26/"
 if hostname | grep -q cmsco01; then
     T="/data1/gpetrucc/TREES_TTH_260116_76X_1L"
 fi
 BASE="python mcEfficiencies.py $BCORE --ytitle 'Fake rate'   "
-PBASE="plots/76X/lepMVA/v1.5"
+PBASE="plots/80X/lepCB/v1.0"
 
 BG=" -j 6 "; if [[ "$1" == "-b" ]]; then BG=" -j 4 & "; shift; fi
 

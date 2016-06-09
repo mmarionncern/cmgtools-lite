@@ -106,6 +106,7 @@ class MCAnalysis:
             if skipMe: continue
             cnames = [ x.strip() for x in field[1].split("+") ]
             total_w = 0.; to_norm = False; ttys = [];
+            is_w = -1
             for cname in cnames:
                 treename = extra["TreeName"] if "TreeName" in extra else options.tree 
                 rootfile = "%s/%s/%s/%s_tree.root" % (options.path, cname, treename, treename)
@@ -134,22 +135,29 @@ class MCAnalysis:
                     self._backgrounds.append(tty)
                 if pname in self._allData: self._allData[pname].append(tty)
                 else                     : self._allData[pname] =     [tty]
+
                 if "data" not in pname:
                     pckobj  = pickle.load(open(pckfile,'r'))
                     counters = dict(pckobj)
-                    if ('Sum Weights' in counters) and options.weight:
-                        is_w = True; 
-                        total_w += counters['Sum Weights']
-                        scale = "genWeight*(%s)" % field[2]
-                    else:
-                        if is_w: raise RuntimeError, "Can't put together a weighted and an unweighted component (%s)" % cnames
-                        total_w += counters['All Events']
-                        scale = "(%s)" % field[2]
-                    if len(field) == 4: scale += "*("+field[3]+")"
-                    for p0,s in options.processesToScale:
-                        for p in p0.split(","):
-                            if re.match(p+"$", pname): scale += "*("+s+")"
-                    to_norm = True
+                    scale = "1"
+                    to_norm = False
+                    if options.weight:
+                        if ('Sum Weights' in counters):
+                            if (is_w==0): raise RuntimeError, "Can't put together a weighted and an unweighted component (%s)" % cnames
+                            is_w = 1; 
+                            total_w += counters['Sum Weights']
+                            scale = "genWeight*(%s)" % field[2]
+                        else:
+                            if (is_w==1): raise RuntimeError, "Can't put together a weighted and an unweighted component (%s)" % cnames
+                            is_w = 0;
+                            total_w += counters['All Events']
+                            print field
+                            scale = "(%s)" % field[2]
+                        if len(field) == 4: scale += "*("+field[3]+")"
+                        for p0,s in options.processesToScale:
+                            for p in p0.split(","):
+                                if re.match(p+"$", pname): scale += "*("+s+")"
+                        to_norm = True
                 elif len(field) == 3:
                     tty.setScaleFactor(field[2])
                 else:
@@ -416,6 +424,19 @@ class MCAnalysis:
                     else                                  : ytxt = nfmtL % toPrint
                     print "%s%s%s" % (k,sep,sep.join(ytxt.split()))
                 print ""
+        elif self._options.txtfmt in ("tex"):
+            for h,r in table: 
+                print "&",h,
+            print "\\\\"
+            #end header
+            for i,(cut,dummy) in enumerate(table[0][1]):
+                print cfmt % cut,
+                for name,report in table:
+                    (nev,err,nev_run_upon) = report[i][1]
+                    toPrint = "& "+ ("%5.2f"%nev) 
+                    if self._options.errors:    toPrint+= " $\\pm$ "+("%5.2f"%err)
+                    print toPrint,
+                print "\\\\"
 
     def _getYields(self,ttylist,cuts):
         return mergeReports([tty.getYields(cuts) for tty in ttylist])
@@ -484,6 +505,7 @@ class MCAnalysis:
         else:
             from multiprocessing import Pool
             pool = Pool(self._options.jobs)
+            print func, tasks
             retlist = pool.map(func, tasks, 1)
             pool.close()
             pool.join()

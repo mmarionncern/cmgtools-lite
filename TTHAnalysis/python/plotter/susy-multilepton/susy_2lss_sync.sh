@@ -1,15 +1,18 @@
 #!/bin/bash
 
-T="~/workspace/private/cmssw/cmg763p3Prod/src/syncV2" #"~/workspace/public/SUSYStudies/data/syncttW_22Apr2016/sync"
-CORE="-P $T --mcc susy-multilepton/testmcc.txt --s2v --tree treeProducerSusyMultilepton"
-CORE="${CORE} -F sf/t {P}/leptonJetReCleanerSusyRA5/evVarFriend_{cname}.root -F sf/t {P}/leptonChoiceRA5/evVarFriend_{cname}.root"
+T="/afs/cern.ch/user/m/mmarionn/workspace/public/SUSYSamples/80X_May26"
+#T="~/workspace/private/cmssw/cmg763p3Prod/src/sync" #"~/workspace/public/SUSYStudies/data/syncttW_22Apr2016/sync"
+CORE="-P $T --mcc susy-multilepton/testmcc.txt --mcc susy-multilepton/susy_2lssinc_triggerdefs.txt --s2v --tree treeProducerSusyMultilepton"
+CORE="${CORE} -F sf/t {P}/leptonJetReCleanerSusyRA5/evVarFriend_{cname}.root -F sf/t {P}/leptonChoiceRA5/evVarFriend_{cname}.root -l 1"
 
 #CORE="${CORE} -p TTWv2_RA5_sync --mcc susy-multilepton/susy_2lssinc_triggerdefs.txt -A alwaystrue TT '(hasTT)'"
 #CORE="${CORE} -p data --mcc susy-multilepton/susy_2lssinc_triggerdefs.txt -A alwaystrue TT '(hasTT)' -A alwaystrue TT 'hasTT' -A alwaystrue SR 'SR>0'"
 #FMT='"{run:1d} {lumi:9d} {evt:12d}\t{LepGood1_pdgId:+2d} {LepGood1_conePt:5.1f}\t{LepGood2_pdgId:+2d} {LepGood2_conePt:5.1f}\t{nJet40}\t{nBJetMedium25:2d}\t{met_pt:5.1f}\t{htJet40j:6.1f}\t{SR:2d}\t{appWeight_Loop:5f}"'
 
 
-CORE="${CORE} -p TTW_RA5_sync -A alwaystrue TT '(hasTT)'" #--mcc -A alwaystrue TT '(hasTT)'
+#CORE="${CORE} -A alwaystrue TT '(hasTT)' -e" #--mcc -A alwaystrue TT '(hasTT)'
+CORE="${CORE} -p DY -p ttbar -A alwaystrue noTT '(hasTF || hasFF)' -e"
+#-p TTWToLNu
 
 ### global variables =====================
 if [ "$2" == "global" ]; then
@@ -37,12 +40,12 @@ flavor="$2"
 shift;
 if [[ "$WHAT" == "mccounts" ]]; then
     FMT='"{run:1d} {lumi:9d} {evt:12d}"'
-    GO="python mcDump.py $CORE susy-multilepton/mca-Spring15-analysis-all.txt susy-multilepton/susy_2lss_multiiso.txt  $FMT"
+    GO="python mcDump.py $CORE susy-multilepton/mca-Fall1576-sync.txt susy-multilepton/susy_2lss_multiiso.txt  $FMT"
     POST="| awk '{print \$3}' "
 elif [[ "$WHAT" == "mcyields" ]]; then
-    GO="python mcAnalysis.py $CORE susy-multilepton/mca-Spring15-analysis-sideband.txt susy-multilepton/susy_2lss_multiiso.txt   -f -G"
+    GO="python mcAnalysis.py $CORE susy-multilepton/mca-Fall1576-sync.txt susy-multilepton/susy_2lss_multiiso.txt   -f -G --tf tex"
 elif [[ "$WHAT" == "mcplots" ]]; then
-    GO="python mcPlots.py $CORE susy-multilepton/mca-Spring15-analysis-all.txt susy-multilepton/susy_2lss_multiiso.txt -f -G  -j 8 -f --legendWidth 0.30 susy-multilepton/susy_2lss_plots.txt"
+    GO="python mcPlots.py $CORE susy-multilepton/mca-Fall1576-sync.txt susy-multilepton/susy_2lss_multiiso.txt -f -G  -j 8 -f --legendWidth 0.30 susy-multilepton/susy_2lss_plots.txt"
 elif [[ "$WHAT" == "mcdumps" ]]; then
     GO="python mcDump.py --dumpFile .fdump.txt $CORE susy-multilepton/mca-Fall1576-sync.txt  susy-multilepton/susy_2lss_multiiso.txt   $FMT"
     POST=" &&  sort -n -k1 -k2 -k3 .fdump.txt > fdump_${flavor}.txt && rm .fdump.txt"
@@ -53,13 +56,13 @@ fi
 
 SAVE="${GO}"
 #for LL  in ee em mm ll; do 
-#for SR  in 0 10 20 30; do # 0X 1X 2X 3X; do 
+#for SR in 0 00 10 20 30; do # 0X 1X 2X 3X; do 
 #for LPt in hh hl; do
 #for LL  in ll; do 
-#for SR  in 0; do # 0X 1X 2X 3X; do 
+for SR  in 0; do # 0X 1X 2X 3X; do 
 #for LPt in hh; do
 for LL  in ll; do 
-for SR  in 0; do # 0X 1X 2X 3X; do 
+#for SR  in 0X 1X 2X 3X; do  #0; do # 0X 1X 2X 3X; do 
 for LPt in ii; do
 for MOD in multiiso; do #oldpresel ptrel miniiso; do
 
@@ -74,9 +77,9 @@ case $SR in
 esac;
 
 case $LL in
-ee)  GO="${GO} -R anyll ee 'abs(LepGood1_pdgId) == 11 && abs(LepGood2_pdgId) == 11' -A alwaystrue trig_ee Triggers_ee" ;;
-em)  GO="${GO} -R anyll em 'abs(LepGood1_pdgId) != abs(LepGood2_pdgId)' -A alwaystrue trig_em Triggers_em" ;;
-mm)  GO="${GO} -R anyll mm 'abs(LepGood1_pdgId) == 13 && abs(LepGood2_pdgId) == 13' -A alwaystrue trig_mm Triggers_mm" ;;
+ee)  GO="${GO} -R anyll ee 'abs(LepGood1_pdgId) == 11 && abs(LepGood2_pdgId) == 11' " ;; #-A alwaystrue trig_ee Triggers_ee
+em)  GO="${GO} -R anyll em 'abs(LepGood1_pdgId) != abs(LepGood2_pdgId)' " ;; #-A alwaystrue trig_em Triggers_em
+mm)  GO="${GO} -R anyll mm 'abs(LepGood1_pdgId) == 13 && abs(LepGood2_pdgId) == 13' " ;; #-A alwaystrue trig_mm Triggers_mm
 #ll)  GO="${GO} -A alwaystrue trig_ll '(abs(LepGood1_pdgId) != 11 || abs(LepGood2_pdgId) != 11 || Triggers_ee) && (abs(LepGood1_pdgId) != 13 || abs(LepGood2_pdgId) != 13 || Triggers_mm) && (abs(LepGood1_pdgId)==abs(LepGood2_pdgId) || Triggers_em)'" ;;
 ll)  GO="${GO}";; # -A alwaystrue trig_ll '(abs(LepGood1_pdgId) != 11 || abs(LepGood2_pdgId) != 11) && (abs(LepGood1_pdgId) != 13 || abs(LepGood2_pdgId) != 13) && (abs(LepGood1_pdgId)==abs(LepGood2_pdgId) )'" ;;
 esac;

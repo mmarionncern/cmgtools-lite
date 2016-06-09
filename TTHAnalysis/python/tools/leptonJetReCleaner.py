@@ -17,7 +17,7 @@ class MyVarProxy:
 
 class LeptonJetReCleaner:
 
-    def __init__(self,label,looseLeptonSel,cleaningLeptonSel,FOLeptonSel,tightLeptonSel,cleanJet,selectJet,cleanWithTaus,doVetoZ,doVetoLMf,doVetoLMt,jetPt,bJetPt,coneptdef):
+    def __init__(self,label,looseLeptonSel,cleaningLeptonSel,FOLeptonSel,tightLeptonSel,cleanJet,selectJet,cleanWithTaus,doVetoZ,doVetoLMf,doVetoLMt,jetPt,bJetPt,coneptdef, storeJetVariables=False):
         self.label = "" if (label in ["",None]) else ("_"+label)
         self.looseLeptonSel = looseLeptonSel
         self.cleaningLeptonSel = cleaningLeptonSel # applied on top of looseLeptonSel
@@ -36,6 +36,7 @@ class LeptonJetReCleaner:
         self.strBJetPt = str(int(bJetPt))
         self.systsJEC = {0:"", 1:"_jecUp", -1:"_jecDown"}
         self.debugprinted = False
+        self.storeJetVariables = storeJetVariables
 
     def listBranches(self):
         label = self.label
@@ -69,6 +70,18 @@ class LeptonJetReCleaner:
                     ("nJet"+self.strBJetPt+label+self.systsJEC[key], "I"), "htJet"+self.strBJetPt+"j"+label+self.systsJEC[key],
                     "mhtJet"+self.strBJetPt + "j"+label+self.systsJEC[key], ("nBJetLoose"+self.strBJetPt+label+self.systsJEC[key], "I"), ("nBJetMedium"+self.strBJetPt+label+self.systsJEC[key], "I"),
                     ])
+
+
+        if self.storeJetVariables:
+            for jfloat in "pt eta phi mass btagCSV rawPt".split():
+                for key in self.systsJEC:
+                    biglist.append( ("JetSel"+label+self.systsJEC[key]+"_"+jfloat,"F",20,"nJetSel"+label) )
+                    biglist.append( ("DiscJetSel"+label+self.systsJEC[key]+"_"+jfloat,"F",20,"nDiscJetSel"+label) )
+
+        biglist.append( ("LepGood_awayJet_pt","F",20,"nLepGood") )
+        biglist.append( ("LepGood_awayJet_eta","F",20,"nLepGood") )
+        biglist.append( ("LepGood_awayJet_phi","F",20,"nLepGood") )
+
         return biglist
 
     def fillCollWithVeto(self,ret,refcollection,leps,lab,labext,selection,lepsforveto,doVetoZ,doVetoLM,sortby,ht=-1,pad_zeros_up_to=20):
@@ -130,7 +143,22 @@ class LeptonJetReCleaner:
         ret["iDiscJSel"+postfix].sort(key = lambda idx : jetcollcleaned[idx].pt if idx >= 0 else jetcolldiscarded[-1-idx].pt, reverse = True)
         ret["nJetSel"+postfix] = len(ret["iJSel"+postfix])
         ret["nDiscJetSel"+postfix] = len(ret["iDiscJSel"+postfix])
-        # 5. compute the sums
+        # 4. if needed, store the jet 4-vectors
+        if self.storeJetVariables:
+            #print postfix, self.label
+            if postfix==self.label:
+                for jfloat in "pt eta phi mass btagCSV rawPt".split():
+                    jetret[jfloat] = []
+                    discjetret[jfloat] = []
+                for idx in ret["iJSel"+postfix]:
+                    jet = jetcollcleaned[idx] if idx >= 0 else jetcolldiscarded[-1-idx]
+                    for jfloat in "pt eta phi mass btagCSV rawPt".split():
+                        jetret[jfloat].append( getattr(jet,jfloat) )
+                for idx in ret["iDiscJSel"+postfix]:
+                    jet = jetcollcleaned[idx] if idx >= 0 else jetcolldiscarded[-1-idx]
+                    for jfloat in "pt eta phi mass btagCSV rawPt".split():
+                        discjetret[jfloat].append( getattr(jet,jfloat) )
+         # 5. compute the sums
         ret["nJet"+self.strBJetPt+postfix] = 0; ret["htJet"+self.strBJetPt+"j"+postfix] = 0; ret["mhtJet"+self.strBJetPt+"j"+postfix] = 0; ret["nBJetLoose"+self.strBJetPt+postfix] = 0; ret["nBJetMedium"+self.strBJetPt+postfix] = 0
         ret["nJet"+self.strJetPt+postfix] = 0; ret["htJet"+self.strJetPt+"j"+postfix] = 0; ret["mhtJet"+self.strJetPt+"j"+postfix] = 0; ret["nBJetLoose"+self.strJetPt+postfix] = 0; ret["nBJetMedium"+self.strJetPt+postfix] = 0
         cleanjets = [];
@@ -154,6 +182,28 @@ class LeptonJetReCleaner:
         ret["mhtJet"+self.strBJetPt+"j"+postfix] = mhtBJetPtvec.Pt()
         ret["mhtJet"+self.strJetPt+"j"+postfix] = mhtJetPtvec.Pt()
         return cleanjets
+
+    def getAwayJets(self,jets,leps):
+        ret = {}
+        ret["LepGood_awayJet_pt"] = []
+        ret["LepGood_awayJet_eta"] = []
+        ret["LepGood_awayJet_phi"] = []
+        #ret["LepGood_awayJet_btagCSV"] = []
+        #print "======================= ",len(leps), len(jets)
+        for lep in leps:
+            ret["LepGood_awayJet_pt"].append(-1)
+            ret["LepGood_awayJet_eta"].append(-1)
+            ret["LepGood_awayJet_phi"].append(-1)
+            for jet in jets:
+                if jet!=None and deltaR(lep,jet) > 1.0:
+                    ret["LepGood_awayJet_pt"][-1] = jet.pt
+                    ret["LepGood_awayJet_eta"][-1] = jet.eta
+                    ret["LepGood_awayJet_phi"][-1] = jet.phi
+                    #ret["LepGood_awayJet_btagCSV"]
+                    #print "youpiyou",jet.pt
+                    break
+        #print ret["LepGood_awayJet_pt"]
+        return ret
 
     def __call__(self,event):
         self.ev = event
@@ -198,6 +248,12 @@ class LeptonJetReCleaner:
         lepst = []; lepstv = [];
         ret, lepst, lepstv = self.fillCollWithVeto(ret,leps,lepsl,'T','Tight',self.tightLeptonSel,lepsforveto=lepsl,ht=retwlabel["htJet"+self.strJetPt+"j"+self.label],sortby = lambda x: x.conept, doVetoZ=self.doVetoZ, doVetoLM=self.doVetoLMt)
 
+        #get the jet away from leptons if needed
+        awayJetret = self.getAwayJets(cleanjets[0], leps)
+        for k,v in awayJetret.iteritems():
+            #print k,v
+            fullret[k]=v
+
         ### attach labels and return
         fullret["nLepGood"]=len(leps)
         fullret["LepGood_conePt"] = [lep.conept for lep in leps]
@@ -209,7 +265,6 @@ class LeptonJetReCleaner:
         for k,v in discjetret.iteritems(): 
             fullret["DiscJetSel%s_%s" % (self.label,k)] = v
         return fullret
-
 
 def bestZ1TL(lepsl,lepst,cut=lambda lep:True):
       pairs = []

@@ -1,4 +1,6 @@
 
+SR: SR: 32,0.5,32.5; XTitle="signal region HH", Legend='TR', LegendCutoff=1e-2
+
 lep_eta:  LepGood1_eta: 24,-2.5,2.5;    XTitle="LepGood1 #eta", Legend='TR', LegendCutoff=1e-2
 lep_miniRelIso_log: LepGood1_miniRelIso: 20,0,.4; Logy, XTitle="LepGood1 Isolation", LegendCutoff=1e-4
 lep_sip3d_log: LepGood1_sip3d: 40,0,10 ; XTitle="LepGood1 SIP_{3D}", Logy,  Legend='TR', LegendCutoff=1e-2
