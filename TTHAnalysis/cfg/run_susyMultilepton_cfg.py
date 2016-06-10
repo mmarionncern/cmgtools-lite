@@ -397,8 +397,8 @@ if runData and not isTest: # For running on data
     #dataChunks.append((json,processing,short,run_ranges,useAAA))
 
     json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_271036-274240_13TeV_PromptReco_Collisions16_JSON.txt'
-    processing = "Run2016B-PromptReco-v1"; short = "Run2016B_PromptReco_v1"; run_ranges = []; useAAA=False;
-    dataChunks.append((json,processing,short,run_ranges,useAAA))
+    #processing = "Run2016B-PromptReco-v1"; short = "Run2016B_PromptReco_v1"; run_ranges = []; useAAA=False;
+    #dataChunks.append((json,processing,short,run_ranges,useAAA))
 
     processing = "Run2016B-PromptReco-v2"; short = "Run2016B_PromptReco_v2"; run_ranges = []; useAAA=False;
     dataChunks.append((json,processing,short,run_ranges,useAAA))
@@ -674,9 +674,7 @@ if getHeppyOption("fast"):
     else:
         sequence.insert(sequence.index(skimAnalyzer)+1, fastSkim)
 
-print "--------------------------> ", getHeppyOption("dropLHEweights",True), (not runFRMC)
 if getHeppyOption("dropLHEweights",True) and not runFRMC:
-    print "================================================================= "
     treeProducer.collections.pop("LHE_weights")
     if lheWeightAna in sequence: sequence.remove(lheWeightAna)
     susyCounter.doLHE = False
