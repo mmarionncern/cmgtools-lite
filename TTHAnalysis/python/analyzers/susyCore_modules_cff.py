@@ -146,6 +146,7 @@ genHFAna = cfg.Analyzer(
 
 lheWeightAna = cfg.Analyzer(
     LHEWeightAnalyzer, name="LHEWeightAnalyzer",
+    useLumiInfo=False
 )
 
 pdfwAna = cfg.Analyzer(
@@ -158,6 +159,7 @@ from CMGTools.TTHAnalysis.analyzers.susyParameterScanAnalyzer import susyParamet
 susyScanAna = cfg.Analyzer(
     susyParameterScanAnalyzer, name="susyParameterScanAnalyzer",
     doLHE=True,
+    useLumiInfo=False
     )
 
 # Lepton Analyzer (generic)

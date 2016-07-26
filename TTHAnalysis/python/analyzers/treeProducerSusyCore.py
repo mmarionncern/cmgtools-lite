@@ -54,6 +54,9 @@ susyCore_globalVariables = [
             NTupleVariable("GenSusyMNeutralino4", lambda ev : ev.genSusyMNeutralino4, int, mcOnly=True, help="Susy Neutralino4 mass"),
             NTupleVariable("GenSusyMChargino", lambda ev : ev.genSusyMChargino, int, mcOnly=True, help="Susy Chargino mass"),
             NTupleVariable("GenSusyMChargino2", lambda ev : ev.genSusyMChargino2, int, mcOnly=True, help="Susy Chargino2 mass"),
+            NTupleVariable("GenSusyMStau", lambda ev : ev.genSusyMStau, int, mcOnly=True, help="Susy Stau mass"),
+            NTupleVariable("GenSusyMStau2", lambda ev : ev.genSusyMStau2, int, mcOnly=True, help="Susy Stau2 mass"),
+            NTupleVariable("GenSusyMSnuTau", lambda ev : ev.genSusyMSnuTau, int, mcOnly=True, help="Susy Sneutrino tau mass"),
 ]
 
 susyCore_globalObjects = {

@@ -367,17 +367,19 @@ if analysis=='susy':
    
     samples_LHE = [TTHnobb_mWCutfix_ext1, TTHnobb_pow, TTLLJets_m1to10, TTWToLNu, TTW_LO, TTZToLLNuNu, TTZ_LO,]
     
+    samples_QCD = [QCD_Mu15] #QCD_Mu5 + QCDPtEMEnriched + QCDPtbcToE
+
     #samples_2l = [TTW_LO,TTZ_LO,WZTo3LNu_amcatnlo,DYJetsToLL_M10to50,DYJetsToLL_M50,WWTo2L2Nu,ZZTo2L2Q,WZTo3LNu,TTWToLNu,TTZToLLNuNu,TTJets_DiLepton,TTHnobb_mWCutfix_ext1,TTHnobb_pow]
     #samples_1l = [WJetsToLNu,TTJets_SingleLeptonFromT,TTJets_SingleLeptonFromTbar,TBarToLeptons_tch_powheg,TToLeptons_sch_amcatnlo,TBar_tWch,T_tWch]
     
     if getHeppyOption("dropLHEweights"):
-        selectedComponents = samples #samples_2l +samples_1l
+        selectedComponents = samples_QCD #samples_2l +samples_1l
     else:
         selectedComponents = samples_LHE
 
 if analysis=='susy':
     for c in selectedComponents:
-        c.splitFactor = len(c.files)
+        c.splitFactor = len(c.files)/3
 
     #cropToLumi(selectedComponents,2)
     #configureSplittingFromTime(samples_1l,50,3)
@@ -385,9 +387,14 @@ if analysis=='susy':
 #    printSummary(selectedComponents)
 
 if analysis=='susy' and runSMS:
-    selectedComponents=[TChiSlepSnu,T1tttt_2016,T5qqqqVV_2016]
+    selectedComponents=[T1tttt_2016,TStauStau,TChiWZ_ZToLL,TChipmSlepSnu,T5qqqqVV_noDM,TChiSlepSnu_x0p05,TChiStauStau_x0p5,TChiWH_WToLNu_HToVVTauTau,T5tttt_dM175,TChiSlepSnu,T5qqqqVV_2016] #[TChiSlepSnu,T1tttt_2016,T5qqqqVV_2016]
+    susyCounter.SMS_varying_masses=['genSusyMGluino','genSusyMNeutralino','genSusyMChargino',
+                                    'genSusyMChargino2','genSusyMNeutralino2','genSusyMSnuTau',
+                                    'genSusyMStau','genSusyMStau2','genSusyMStop']
     ttHLepSkim.minLeptons = 0
     ttHLepSkim.requireSameSignPair = False
+    lheWeightAna.useLumiInfo=True
+    susyScanAna.useLumiInfo=True
     for c in selectedComponents:
         c.splitFactor = len(c.files)
 
@@ -410,8 +417,8 @@ if runData and not isTest: # For running on data
     is50ns = False
     dataChunks = []
 
-    json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_271036-275783_13TeV_PromptReco_Collisions16_JSON.txt' # 2.07/fb
-    processing = "Run2016B-PromptReco-v2"; short = "Run2016B_PromptReco_v2"; run_ranges = [(271350,275783)]; useAAA=False; # -v2 starts from 273150 275125
+    json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_271036-275783_13TeV_PromptReco_Collisions16_JSON.txt' # 2.07/fb #json_DCSOnly_up276811.txt
+    processing = "Run2016C-PromptReco-v2"; short = "Run2016C_PromptReco_v2"; run_ranges = [(275657,275783)]; useAAA=False; # -v2 starts from 273150 275125
     dataChunks.append((json,processing,short,run_ranges,useAAA))
 
     compSelection = ""; compVeto = ""
@@ -493,7 +500,7 @@ if runData and not isTest: # For running on data
                                                  triggers=triggers[:], vetoTriggers = vetos[:],
                                                  useAAA=useAAA)
                 print "Will process %s (%d files)" % (comp.name, len(comp.files))
-                comp.splitFactor = len(comp.files)/8
+                comp.splitFactor = len(comp.files)/1
                 comp.fineSplitFactor = 1
                 selectedComponents.append( comp )
             if exclusiveDatasets: vetos += triggers
@@ -682,6 +689,13 @@ elif test == '5':
         comp.files = comp.files[:5]
         comp.splitFactor = 1
         comp.fineSplitFactor = 5
+elif test == "t1tttt":
+    comp = cfg.MCComponent( files = ["/tmp/mmarionn/test.root"], name="T1tttt" )
+    comp.triggers = []
+    comp.splitFactor = 1
+    comp.fineSplitFactor = 1
+    selectedComponents = [comp]
+    sequence.remove(jsonAna)
 elif test == "ewkinosync":
     comp = cfg.MCComponent( files = ["root://eoscms.cern.ch//store/mc/RunIIFall15MiniAODv2/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/60000/14C51DB0-D6B8-E511-8D9B-8CDCD4A9A484.root"], name="TTW_EWK_sync" )
     comp.triggers = []
@@ -697,7 +711,7 @@ elif test == "ra5-sync-mc":
     selectedComponents = [ comp ]
     sequence.remove(jsonAna)
 elif test == "tau-sync":
-    comp = cfg.MCComponent( files = [ "root://eoscms.cern.ch//store/mc/RunIISpring16MiniAODv2/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/8E84F4BB-B620-E611-BBD8-B083FECFF2BF.root"], name="TTW_Tau" )
+    comp = cfg.MCComponent( files = [ "root://eoscms.cern.ch//store/mc/RunIISpring16MiniAODv2/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/B60FBD0A-0E1D-E611-8259-001EC94B4EF5.root"], name="TTW_Tau" )
     comp.triggers = []
     comp.splitFactor = 1
     comp.fineSplitFactor = 6
