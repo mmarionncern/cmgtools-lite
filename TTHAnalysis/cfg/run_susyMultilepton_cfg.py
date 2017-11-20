@@ -38,7 +38,7 @@ sample = "main"
 #if runDataQCD or runFRMC: sample="qcd1l"
 #sample = "z3l"
 
-if analysis not in ['ttH','susy','SOS']: raise RuntimeError, 'Analysis type unknown'
+if analysis not in ['ttH','susy','SOS','top']: raise RuntimeError, 'Analysis type unknown'
 print 'Using analysis type: %s'%analysis
 
 # Lepton Skimming
@@ -942,12 +942,17 @@ elif test == "ewkinosync":
     selectedComponents = [comp]
     sequence.remove(jsonAna)
 elif test == "ra5-sync-mc":
-    comp = cfg.MCComponent( files = ["root://eoscms.cern.ch//store/mc/RunIISpring16MiniAODv1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/6E02CA07-BA02-E611-A59E-14187741208F.root"], name="TTW_RA5_sync" )
+    comp = cfg.MCComponent( files = ["root://eoscms.cern.ch//store/relval/CMSSW_9_2_12/RelValTTbar_13/MINIAODSIM/92X_upgrade2017_realistic_v11-v1/00000/AEC9AC38-BC9D-E711-A934-0CC47A4D7678.root"], name="TTW_RA5_sync" )
     comp.triggers = []
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
     selectedComponents = [ comp ]
     sequence.remove(jsonAna)
+elif test == "ttv-sync":
+    mcComp = kreator.makeMCComponent("WZ92", "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer17MiniAOD-92X_upgrade2017_realistic_v10-v2/MINIAODSIM", "CMS", ".*root", 1)
+    mcComp.splitFactor = 1
+    mcComp.fineSplitFactor = 1
+    selectedComponents = [ mcComp ]
 elif test == "tau-sync":
     comp = cfg.MCComponent( files = [ "root://eoscms.cern.ch//store/mc/RunIISpring16MiniAODv2/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/8E84F4BB-B620-E611-BBD8-B083FECFF2BF.root"], name="TTW_Tau" )
     comp.triggers = []

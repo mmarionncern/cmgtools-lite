@@ -39,7 +39,7 @@ class LeptonJetReCleaner:
         self.strJetPt = str(int(jetPt))
         self.strBJetPt = str(int(bJetPt))
         self.systsJEC = {0:"", 1:"_jecUp", -1:"_jecDown"}
-        self.debugprinted = False
+        self.debugprinted = True
         self.storeJetVariables = storeJetVariables
 
     def listBranches(self):
@@ -290,7 +290,6 @@ class LeptonJetReCleaner:
         for k,v in jetret.iteritems(): 
             fullret["JetSel%s_%s" % (self.label,k)] = v
         return fullret
-
 
 def bestZ1TL(lepsl,lepst,cut=lambda lep:True):
       pairs = []

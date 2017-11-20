@@ -1,0 +1,10 @@
+executable            = EXEPH
+#sub.sh
+arguments             = ARGPH
+output                = LOGPH.out
+error                 = LOGPH.err
+log                   = LOGPH.log
+requirements = (OpSysAndVer =?= "CentOS7")
+RequestCpus = 8
++JobFlavour = "tomorrow"
+queue

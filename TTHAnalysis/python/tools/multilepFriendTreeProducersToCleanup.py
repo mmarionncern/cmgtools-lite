@@ -310,3 +310,38 @@ MODULES.append( ('LepMVAFriendJetLessIVFNOTAU_SIGDY', lambda: LepMVAFriend((os.e
                                                                    training="SoftJetLessIVF", label="JetLessIVFNOTAU_SIGDY")) )
 
 
+from CMGTools.TTHAnalysis.tools.tiamattZComputer import TiamattZComputer
+#MODULES.append( ('TiamattZWZ', lambda: TiamattZComputer(label="NNWZ",training="TiamattZ_WZ_v2.0.h5")) )
+#MODULES.append( ('TiamattZtZW', lambda: TiamattZComputer(label="NNtZW",training="TiamattZ_tZW_v2.0.h5")) )
+#MODULES.append( ('TiamattZttH', lambda: TiamattZComputer(label="NNttH",training="TiamattZ_ttH_v2.0.h5")) )
+#MODULES.append( ('TiamattZtZq', lambda: TiamattZComputer(label="NNtZq",training="TiamattZ_tZq_v2.0.h5")) )
+
+MODULES.append( ('TiamattZWZ', lambda: TiamattZComputer(label="NNWZ",training="TiamattZ_WZ_v4.0.h5")) )
+MODULES.append( ('TiamattZtZW', lambda: TiamattZComputer(label="NNtZW",training="TiamattZ_tZW_v4.0.h5")) )
+MODULES.append( ('TiamattZttH', lambda: TiamattZComputer(label="NNttH",training="TiamattZ_ttH_v4.0.h5")) )
+MODULES.append( ('TiamattZtZq', lambda: TiamattZComputer(label="NNtZq",training="TiamattZ_tZq_v4.0.h5")) )
+
+MODULES.append( ('TiamattZWZTest', lambda: TiamattZComputer(label="NNWZ",training="TiamattZ_WZ_v4.0.h5",indicesFromMPAF=False,inputLabel="_Mini")) )
+
+from CMGTools.TTHAnalysis.tools.functionsTTV import _ttV_looseTTVLepId, _ttV_conePt, _ttV_fakableTTVLepId, _ttV_tightTTVLepId
+MODULES.append( ('leptonJetReCleanerTTV', lambda : LeptonJetReCleaner("Mini",
+                   looseLeptonSel = lambda lep : _ttV_looseTTVLepId(lep),
+                   cleaningLeptonSel = lambda lep : _ttV_conePt(lep)>10 and _ttV_fakableTTVLepId(lep),
+                   FOLeptonSel = lambda lep,ht : _ttV_conePt(lep)>10 and _ttV_fakableTTVLepId(lep),
+                   tightLeptonSel = lambda lep,ht : lep.pt>10 and _ttV_tightTTVLepId(lep),
+                   cleanJet = lambda lep,jet,dr : dr<0.4,
+                   selectJet = lambda jet: abs(jet.eta)<5.0 and jet.pt>25,
+                   cleanTau = lambda l,j,d: True,
+                   looseTau = lambda l: True,
+                   tightTau = lambda l: True,
+                   cleanJetsWithTaus = False,
+                   doVetoZ = False,
+                   doVetoLMf = False,
+                   doVetoLMt = False,
+                   jetPt = 25,
+                   bJetPt = 25,
+                   coneptdef = lambda lep: _ttV_conePt(lep),
+                   storeJetVariables = True
+                 ) ))
+
+MODULES.append( ('TiamattZValidation', lambda: TiamattZComputer(label="nnl",training="TiamattZ_WZ_v2.0.h5",layers=["lstm_btag_lstm2","lstm_jet_lstm2","lstm_htop_lstm2","lstm_sltop_lstm2","lstm_hW_lstm2","lstm_lep_lstm2","lstm_ewk_lstm2","dense_d1","dense_d2","dense_d3","dense_d4"]) ) )

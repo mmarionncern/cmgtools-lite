@@ -192,6 +192,9 @@ if options.queue:
         super  = "qsub -q {queue} -N happyTreeFriend".format(queue = options.queue)
         runner = "lxbatch_runner.sh"
         theoutput = theoutput.replace('/pool/ciencias/','/pool/cienciasrw/')
+    elif options.env == "lxcondor":
+        super = "condor_submit"
+        runner = "lxcondor_runner.sh"
     else: # Use lxbatch by default
         runner = "lxbatch_runner.sh"
         super  = "bsub -q {queue}".format(queue = options.queue)
@@ -220,13 +223,58 @@ if options.queue:
                 cmd = "echo \"{base} -d {data} -c {chunk} {post}\" | {super} {writelog}".format(super=super, writelog=writelog, base=basecmd, data=name, chunk=chunk, post=friendPost)
             if fs:
                 cmd += " --fineSplit %d --subChunk %d" % (fs[1], fs[0])
+
+            if options.env == "lxcondor":
+                basecmd = " {dir} {cmssw} python {self} -N {chunkSize} -T {tdir} -t {tree} {data} {output}".format(
+                    dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE'],
+                    self=sys.argv[0], chunkSize=options.chunkSize, tdir=options.treeDir,
+                    tree=options.tree, data=args[0], output=theoutput)
+
+                copyCmd="cp condorConfig condorConfig_{data}_{chunk}".format(data=name,chunk=chunk)
+                os.system(copyCmd)
+                exeBase="{dir}/{runner}".format(dir = os.getcwd(), runner=runner)
+                optBase="{base} -d {data} -c {chunk} {post}".format(base=basecmd, data=name, chunk=chunk, post=friendPost)
+                optBase.replace('\'','')
+                logBase="log_{data}_chunk{chunk}".format(data=name, chunk=chunk)
+                sedCmd0="sed -i 's|EXEPH|'{exe}'|' condorConfig_{data}_{chunk}".format(exe=exeBase, data=name, chunk=chunk)
+                sedCmd1="sed -i 's|ARGPH|'\"\"\'{opts}\'\"\"'|' condorConfig_{data}_{chunk}".format(opts=optBase, data=name, chunk=chunk)
+                sedCmd2="sed -i 's|LOGPH|'{logName}'|' condorConfig_{data}_{chunk}".format(logName=logBase, data=name, chunk=chunk)
+                #print "-->>",sedCmd1
+                os.system(sedCmd0)
+                os.system(sedCmd1)
+                os.system(sedCmd2)
+                cmd="{super} condorConfig_{data}_{chunk}".format(super=super, data=name, chunk=chunk)
+
         else:
             if options.logdir: writelog = "-o {logdir}/{data}.out -e {logdir}/{data}.err".format(logdir=logdir, data=name)
             cmd = "{super} {writelog} {base} -d {data} {post}".format(super=super, writelog=writelog, base=basecmd, data=name, chunk=chunk, post=friendPost)
 
             if options.queue == "batch":
                 cmd = "echo \"{base} -d {data} {post}\" | {super} {writelog}".format(super=super, writelog=writelog, base=basecmd, data=name, chunk=chunk, post=friendPost)
-        print cmd
+
+            if options.env == "lxcondor":
+                basecmd = " {dir} {cmssw} python {self} -N {chunkSize} -T {tdir} -t {tree} {data} {output}".format(
+                    dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE'],
+                    self=sys.argv[0], chunkSize=options.chunkSize, tdir=options.treeDir,
+                    tree=options.tree, data=args[0], output=theoutput)
+                #print("----------------------------",basecmd)
+                copyCmd="cp condorConfig condorConfig_{data}_{chunk}".format(data=name,chunk=chunk)
+                os.system(copyCmd)
+                exeBase="{dir}/{runner}".format(dir = os.getcwd(), runner=runner)
+                optBase="{base} -d {data} {post}".format(base=basecmd, data=name, post=friendPost)
+                optBase.replace('\'','')
+                logBase="log_{data}_chunk{chunk}".format(data=name, chunk=chunk)
+                sedCmd0="sed -i 's|EXEPH|'{exe}'|' condorConfig_{data}_{chunk}".format(exe=exeBase, data=name, chunk=chunk)
+                sedCmd1="sed -i 's|ARGPH|'\"\"\'{opts}\'\"\"'|' condorConfig_{data}_{chunk}".format(opts=optBase, data=name, chunk=chunk)
+                sedCmd2="sed -i 's|LOGPH|'{logName}'|' condorConfig_{data}_{chunk}".format(logName=logBase, data=name, chunk=chunk)
+                #print ">>-->>",sedCmd1
+                os.system(sedCmd0)
+                os.system(sedCmd1)
+                os.system(sedCmd2)
+                cmd="{super} condorConfig_{data}_{chunk}".format(super=super, data=name, chunk=chunk)
+
+
+                
         if not options.pretend:
             os.system(cmd)
 

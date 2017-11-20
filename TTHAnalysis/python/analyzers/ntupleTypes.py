@@ -174,6 +174,7 @@ jetTypeSusyExtraLight = NTupleObjectType("jetSusyExtraLight",  baseObjectTypes =
 ])
 
 jetTypeSusySuperLight = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variables = [
+        NTupleVariable("rawPt",  lambda x : x.pt() * x.rawFactor(), help="p_{T} before JEC"),
         NTupleVariable("etaetaMoment", lambda x : x.etaetaMoment() if hasattr(x,'etaetaMoment') else -1, mcOnly=True, help="eta eta moment"),
         NTupleVariable("phiphiMoment", lambda x : x.phiphiMoment() if hasattr(x,'phiphiMoment') else -1, mcOnly=True, help="phi phi moment"),
         NTupleVariable("btagCSV",   lambda x : x.btag('pfCombinedInclusiveSecondaryVertexV2BJetTags'), help="CSV-IVF v2 discriminator"),
