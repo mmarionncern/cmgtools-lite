@@ -696,12 +696,12 @@ if runData:# and not isTest: # For running on data
         dataChunks.append((json,processing,short,run_ranges,useAAA))
         processing = "Run2017C-17Nov2017-v1"; short = "Run2017C_17Nov2017_v1"; run_ranges = [(299368,302029)]; useAAA=True;
         dataChunks.append((json,processing,short,run_ranges,useAAA))
-        processing = "Run2017D-17Nov2017-v1"; short = "Run2017D_17Nov2017_v1"; run_ranges = [(302030,303434)]; useAAA=True;
-        dataChunks.append((json,processing,short,run_ranges,useAAA))
-        processing = "Run2017E-17Nov2017-v1"; short = "Run2017E_17Nov2017_v1"; run_ranges = [(303824,304797)]; useAAA=True;
-        dataChunks.append((json,processing,short,run_ranges,useAAA))
-        processing = "Run2017F-17Nov2017-v1"; short = "Run2017F_17Nov2017_v1"; run_ranges = [(305040,306462)]; useAAA=True;
-        dataChunks.append((json,processing,short,run_ranges,useAAA))
+        #processing = "Run2017D-17Nov2017-v1"; short = "Run2017D_17Nov2017_v1"; run_ranges = [(302030,303434)]; useAAA=True;
+        #dataChunks.append((json,processing,short,run_ranges,useAAA))
+        #processing = "Run2017E-17Nov2017-v1"; short = "Run2017E_17Nov2017_v1"; run_ranges = [(303824,304797)]; useAAA=True;
+        #dataChunks.append((json,processing,short,run_ranges,useAAA))
+        #processing = "Run2017F-17Nov2017-v1"; short = "Run2017F_17Nov2017_v1"; run_ranges = [(305040,306462)]; useAAA=True;
+        #dataChunks.append((json,processing,short,run_ranges,useAAA))
 
 
     compSelection = ""; compVeto = ""
@@ -725,16 +725,16 @@ if runData:# and not isTest: # For running on data
             DatasetsAndTriggers.append( ("DoubleEG",   ["HLT_Ele%d_CaloIdM_TrackIdM_PFJet30_v*" % pt for pt in (8,12)]) )
             DatasetsAndTriggers.append( ("JetHT",   triggers_FR_jet) )
     else:
-        DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt + triggers_1mu_iso + triggers_1mu_noniso) )
+        DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt + triggers_FR_1mu_iso + triggers_FR_1mu_noniso) )
         DatasetsAndTriggers.append( ("DoubleEG",   triggers_ee + triggers_ee_ht + triggers_3e + triggers_FR_1e_noiso + triggers_FR_1e_iso) )
         DatasetsAndTriggers.append( ("MuonEG",     triggers_mue + triggers_mue_ht + triggers_2mu1e + triggers_2e1mu ) )
-        #if analysis=='susy':
-        #    DatasetsAndTriggers.append( ("SingleMuon", triggers_leptau + triggers_1mu_iso + triggers_1mu_noniso) )
-        #    DatasetsAndTriggers.append( ("SingleElectron", triggers_leptau + triggers_1e_iso + triggers_1e_noniso) )
-        #    DatasetsAndTriggers.append( ("Tau", triggers_leptau + triggers_1mu_iso + triggers_1e_iso) )
-        #    #for edgeZ OS
-        #    DatasetsAndTriggers.append( ("JetHT", triggers_pfht ) ) #triggerFlagsAna.triggerBits['htall']
-        #    DatasetsAndTriggers.append( ("MET", triggers_htmet ) ) # triggerFlagsAna.triggerBits['htmet']
+        if analysis=='susy':
+            DatasetsAndTriggers.append( ("SingleMuon", triggers_leptau + triggers_1mu_iso + triggers_1mu_noniso) )
+            DatasetsAndTriggers.append( ("SingleElectron", triggers_leptau + triggers_1e_iso + triggers_1e_noniso) )
+            #DatasetsAndTriggers.append( ("Tau", triggers_leptau + triggers_1mu_iso + triggers_1e_iso) )
+            #for edgeZ OS
+            DatasetsAndTriggers.append( ("JetHT", triggers_pfht ) ) #triggerFlagsAna.triggerBits['htall']
+            DatasetsAndTriggers.append( ("MET", triggers_htmet ) ) # triggerFlagsAna.triggerBits['htmet']
         #else:
         #    DatasetsAndTriggers.append( ("SingleMuon", triggers_1mu_iso + triggers_1mu_noniso) )
         #    DatasetsAndTriggers.append( ("SingleElectron", triggers_1e) )
