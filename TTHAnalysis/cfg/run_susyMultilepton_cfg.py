@@ -8,7 +8,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 import re
 import sys
 import copy
-
+# python heppy_crab.py --cfg-file ../run_susyMultilepton_cfg.py --storage-site T2_CH_CERN --output-dir heppyTrees -v ProdMCMar7 -l ProdMCMar7 --option analysis="susy" -u treeProducerSusyMultilepton/tree.root --ship-file ../susyVariablesToKeep --option runData --option dataEra2017
 #-------- LOAD ALL ANALYZERS -----------
 
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
@@ -725,7 +725,7 @@ if runData:# and not isTest: # For running on data
             DatasetsAndTriggers.append( ("DoubleEG",   ["HLT_Ele%d_CaloIdM_TrackIdM_PFJet30_v*" % pt for pt in (8,12)]) )
             DatasetsAndTriggers.append( ("JetHT",   triggers_FR_jet) )
     else:
-        DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt + triggers_FR_1mu_iso + triggers_FR_1mu_noniso) )
+        DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt + triggers_FR_1mu_iso + triggers_FR_1mu_noiso) )
         DatasetsAndTriggers.append( ("DoubleEG",   triggers_ee + triggers_ee_ht + triggers_3e + triggers_FR_1e_noiso + triggers_FR_1e_iso) )
         DatasetsAndTriggers.append( ("MuonEG",     triggers_mue + triggers_mue_ht + triggers_2mu1e + triggers_2e1mu ) )
         if analysis=='susy':
