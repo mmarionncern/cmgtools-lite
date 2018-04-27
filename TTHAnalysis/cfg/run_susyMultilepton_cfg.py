@@ -822,6 +822,10 @@ if True and runData:
     printnewsummary = False
     for c in selectedComponents:
         c.splitFactor = len(c.files)/4
+        if "JetHT" in c.name or "MET" in c.name:
+            c.splitFactor = len(c.files)/20
+        if "Single" in c.name:
+            c.splitFactor = len(c.files)/8
         if "PromptReco" in c.name:
             printnewsummary = True
             filterComponent(c, 1)
